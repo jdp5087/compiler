@@ -87,4 +87,14 @@ void init(void)
   _getchar();
 }
 
-
+void expression(void)
+{
+  char *s = (char*)malloc(sizeof(char*)*14);
+  char c[2];
+  sprintf(c, "%c", getnum()); 
+  strcpy(s, "movl\t");
+  strcat(s, c);
+  strcat(s, ",%ebx");
+  emitln(s);
+  free(s);
+}

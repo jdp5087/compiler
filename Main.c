@@ -5,5 +5,6 @@
 int main()
 {
   init();
-  printf("%c", look);
+  expression();
+  return 0;
 }
