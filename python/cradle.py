@@ -4,6 +4,7 @@ import os
 
 _IN = sys.stdin.read
 _OUT = sys.stdout.write
+_ERR = sys.stderr.write
 
 TAB = '\t'
 LOOK = ''
@@ -13,7 +14,7 @@ def getchar():
     LOOK = _IN(1)
 
 def error(s):
-    _OUT('{}Error: {}.{}'.format(os.linesep, s, os.linesep))
+    _ERR('{}Error: {}.{}'.format(os.linesep, s, os.linesep))
 
 def abort(s):
     error(s)
@@ -62,13 +63,19 @@ def term():
     emitln(movl('$' + getnum(),'%eax'))
 
 def expression():
+    def check():
+        if LOOK not in OPS.keys() and LOOK != '\n':
+            expected('Addop')
     term()
     emitln(movl('%eax','%ebx'))
-    try:
-        op = OPS[LOOK]
-        op()
-    except KeyError:
-        expected('Addop')
+    check()
+    while LOOK in OPS.keys():
+        try:
+            op = OPS[LOOK]
+            op()
+            check()
+        except BaseException as e:
+            expected('Addop')
 
 def add():
     match('+')
@@ -79,6 +86,7 @@ def subtract():
     match('-')
     term()
     emitln(subl('%eax','%ebx'))
+    emitln(negl('%ebx'))
 
 OPS = {
     '+': add,
@@ -90,18 +98,27 @@ def main():
     expression()
 
 def movl(v1, v2):
-    return asm_inst('movl').format(v1,v2)
+    return asm_inst('movl', 2).format(v1,v2)
 
 def addl(v1, v2):
-    return asm_inst('addl').format(v1,v2)
+    return asm_inst('addl', 2).format(v1,v2)
 
 def subl(v1,v2):
-    return asm_inst('subl').format(v1,v2)
+    return asm_inst('subl', 2).format(v1,v2)
 
-def asm_inst(inst):
+def negl(v1):
+    return asm_inst('negl', 1).format(v1)
+
+def asm_inst(inst, args):
+    numargs = {
+        1:'{0}',
+        2:'{0},{1}'
+        }
+    if args not in numargs:
+        raise ValueError('Incorrect number of arguments for asm_inst')
     format_dict = {'inst': inst,
                    'TAB': TAB,
-                   'registers': '{0},{1}'}
+                   'registers': numargs[args]}
     return '{inst}{TAB}{registers}'.format(**format_dict)
                                      
                                      
