@@ -33,16 +33,18 @@ void _expected(char s[])
   free(t);
 }
 
-void match(char *x)
+void match(char x)
 {
-  char *c = (char*)malloc(128);
+  char *c = malloc(sizeof(char*)*4);
   char *d = "\"";
-  
-  if (look == *x) {
+  char e[2];
+
+  if (look == x) {
     _getchar();
   } else {
+    sprintf(e, "%c", x);
     strcpy(c, d);
-    strcat(c, x);
+    strcat(c, e);
     strcat(c, d);
     _expected(c);
     free(c);
@@ -87,7 +89,7 @@ void init(void)
   _getchar();
 }
 
-void expression(void)
+void term(void)
 {
   char *s = (char*)malloc(sizeof(char*)*14);
   char c[2];
@@ -98,3 +100,36 @@ void expression(void)
   emitln(s);
   free(s);
 }
+
+void add(void)
+{
+  match('+');
+  term();
+  emitln("addl\t%ecx,%ebx");
+}
+
+void subtract(void)
+{
+  match('-');
+  term();
+  emitln("subl\t%ecx,%ebx");
+  emitln("negl\t&ebx");
+}
+
+void expression(void)
+{
+  term();
+  emitln("movl\t%ebx,ecx");
+  switch (look){
+  case '+' :
+    add();
+    break;
+  case '-' :
+    subtract();
+    break;
+  default :
+    _expected("Addop");
+  
+  }
+}
+
