@@ -61,13 +61,14 @@ def init():
 
 def term():
     emitln(movl('$' + getnum(),'%eax'))
-
+### MOVE THE FIRST VALUE INTO EAX, THEN PUSH EVERY SUCCESSIVE TERM ONTO THE STACK
+### and perform appropriate op this code is broken
 def expression():
     def check():
         if LOOK not in OPS.keys() and LOOK != '\n':
             expected('Addop')
     term()
-    emitln(movl('%eax','%ebx'))
+    emitln(movl('$' + getnum(), '%eax'))
     check()
     while LOOK in OPS.keys():
         try:
@@ -80,13 +81,16 @@ def expression():
 def add():
     match('+')
     term()
-    emitln(addl('%eax','%ebx'))
+    emitln(addl('(%esp)','%eax'))
+    emitln(addl('$4','%esp'))
+    
 
 def subtract():
     match('-')
     term()
-    emitln(subl('%eax','%ebx'))
-    emitln(negl('%ebx'))
+    emitln(subl('(%esp)','%eax'))
+    emitln(addl('$4','%esp'))
+    emitln(negl('%eax'))
 
 OPS = {
     '+': add,
@@ -108,6 +112,12 @@ def subl(v1,v2):
 
 def negl(v1):
     return asm_inst('negl', 1).format(v1)
+
+def push(v1):
+    return asm_inst('push', 1).format(v1)
+
+def pop(v1):
+    return asm_inst('pop', 1).format(v1)
 
 def asm_inst(inst, args):
     numargs = {
