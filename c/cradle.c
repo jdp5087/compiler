@@ -4,8 +4,10 @@
 #include <ctype.h>
 
 #include "cradle.h"
+#include "helpers.h"
+#include "instructions.h"
 
-#define TAB '\t'
+
 
 char look;
 
@@ -51,23 +53,23 @@ void match(char x)
   }
 }
 
-char getname(void)
+char* getname(void)
 {
   if (!isalpha(look)) {
     _expected("Name");
   } else {
-    char c = toupper(look);
+    char *c = char_to_string(toupper(look));
     _getchar();
     return c;
   }
 }
 
-char getnum(void)
+char* getnum(void)
 {
   if (!isdigit(look)) {
     _expected("Digit");
   } else {
-    char c = look;
+    char *c = char_to_string(look);
     _getchar();
     return c;
   }
@@ -91,13 +93,13 @@ void init(void)
 
 void term(void)
 {
+  char *c = getnum();
   char *s = (char*)malloc(sizeof(char*)*14);
-  char c[2];
-  sprintf(c, "%c", getnum()); 
-  strcpy(s, "movl\t");
+  strcpy(s, "movl\t");  
   strcat(s, c);
   strcat(s, ",%ebx");
   emitln(s);
+  free(c);
   free(s);
 }
 
@@ -131,5 +133,6 @@ void expression(void)
     _expected("Addop");
   
   }
+
 }
 

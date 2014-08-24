@@ -1,6 +1,5 @@
 import subprocess
-
-command = "((echo 1+1) | (./df))"
+import sys
 
 def parse(cmd):
     if not (cmd.startswith('(') and cmd.endswith(')')):
@@ -26,11 +25,6 @@ def parse(cmd):
             except IndexError:
                 cmd = cmd[res:]
     return l
-
-result = parse(command)
-
-
-import sys
 
 print(subprocess.call('echo "1+2+3" | ./df', shell=True))
 

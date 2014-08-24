@@ -1,8 +1,14 @@
-cradle.o: cradle.c cradle.h
+cradle.o: cradle.c cradle.h helpers.h
 	gcc -c cradle.c
 
 Main.o: Main.c cradle.h
 	gcc -c Main.c
 
-df: cradle.o Main.o
-	gcc cradle.o Main.o -o df
+helpers.o: helpers.c helpers.h
+	gcc -c helpers.c
+
+instructions.o: instructions.c instructions.h
+	gcc -c instructions.c
+
+df: cradle.o Main.o helpers.o instructions.o
+	gcc cradle.o Main.o helpers.o instructions.o -o ../df
