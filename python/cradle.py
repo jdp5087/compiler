@@ -68,9 +68,9 @@ def expression():
         if LOOK not in OPS.keys() and LOOK != '\n':
             expected('Addop')
     term()
-    emitln(movl('$' + getnum(), '%eax'))
     check()
     while LOOK in OPS.keys():
+        emitln(push('%eax'))
         try:
             op = OPS[LOOK]
             op()
@@ -89,8 +89,8 @@ def subtract():
     match('-')
     term()
     emitln(subl('(%esp)','%eax'))
-    emitln(addl('$4','%esp'))
     emitln(negl('%eax'))
+    emitln(addl('$4','%esp'))
 
 OPS = {
     '+': add,

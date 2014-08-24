@@ -32,6 +32,5 @@ result = parse(command)
 
 import sys
 
-print(subprocess.PIPE.to_bytes(65))
-print(subprocess.call(['./df'], stdin=subprocess.PIPE))
-sys.stdin.write("1+2")
+print(subprocess.call('echo "1+2+3" | ./df', shell=True))
+
