@@ -93,11 +93,9 @@ void init(void)
 
 void term(void)
 {
-  char *c = getnum();
-  char *s = (char*)malloc(sizeof(char*)*14);
-  strcpy(s, "movl\t");  
-  strcat(s, c);
-  strcat(s, ",%ebx");
+  char *c = (char*)malloc(sizeof(char)*3);
+  sprintf(c, "%c%s", '$', getnum());
+  char *s = movl(c, "%ebx");
   emitln(s);
   free(c);
   free(s);
@@ -107,21 +105,29 @@ void add(void)
 {
   match('+');
   term();
-  emitln("addl\t%ecx,%ebx");
+  char *s = addl("%ecx", "%ebx");
+  emitln(s);
+  free(s);
 }
 
 void subtract(void)
 {
   match('-');
   term();
-  emitln("subl\t%ecx,%ebx");
-  emitln("negl\t&ebx");
+  char *s = subl("%ecx", "%ebx");
+  char *t = neg("%ebx");
+  emitln(s);
+  emitln(t);
+  free(s);
+  free(t);
 }
 
 void expression(void)
 {
   term();
-  emitln("movl\t%ebx,ecx");
+  char *s = movl("%ebx", "%ecx");
+  emitln(s);
+  free(s);
   switch (look){
   case '+' :
     add();
