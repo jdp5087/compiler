@@ -9,21 +9,19 @@
 
 /* re-do the definition to take a struct instead of separate structures. */
 
-
-typedef struct {
-  const char *arr[] = {"+", "-"};
-  int arr_len = 2;
-}
+/* typedef struct { */
+/*   const char *arr[] = {"+", "-"}; */
+/*   int arr_len = 2; */
+/* } stuff; */
 
 const char *ops[] = {"+", "-"};
-int ops_len = 2;
-
+int ops_len = (sizeof(ops)/sizeof(char *));
 char look;
 
 int in_cmp(char *target, const char *array[], int array_len)
 {
   int i;
-  for (i = 0; i < array_len; i++) {
+  for (i = 0; i < array_len; i = i+1) {
     if (strcmp(target, array[i]) == 0)
       return 1;
   }
@@ -114,7 +112,7 @@ void term(void)
 {
   char *c = (char*)malloc(sizeof(char)*3);
   sprintf(c, "%c%s", '$', getnum());
-  char *s = movl(c, "%ebx");
+  char *s = movl(c, "%eax");
   emitln(s);
   free(c);
   free(s);
@@ -124,7 +122,7 @@ void add(void)
 {
   match('+');
   term();
-  char *s = addl("%ecx", "%ebx");
+  char *s = addl("%eax", "%ebx");
   emitln(s);
   free(s);
 }
@@ -133,31 +131,34 @@ void subtract(void)
 {
   match('-');
   term();
-  char *s = subl("%ecx", "%ebx");
-  char *t = neg("%ebx");
+  char *s = subl("%eax", "%ebx");
   emitln(s);
-  emitln(t);
   free(s);
-  free(t);
 }
 
 void expression(void)
 {
+  char *string_look;
   term();
-  char *s = movl("%ebx", "%ecx");
+  char *s = movl("%eax", "%ebx");
   emitln(s);
   free(s);
-  switch (look){
-  case '+' :
-    add();
-    break;
-  case '-' :
-    subtract();
-    break;
-  default :
-    _expected("Addop");
-  
+  string_look = char_to_string(look);
+  while (in_cmp(string_look, ops, ops_len)) {
+    switch (look){
+    case '+' :
+      add();
+      break;
+    case '-' :
+      subtract();
+      break;
+    default :
+      free(string_look);
+      _expected("Addop");
+    }
+    free(string_look);
+    string_look = char_to_string(look);
   }
-
+  free(string_look);
 }
 
