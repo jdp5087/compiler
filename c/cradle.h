@@ -1,5 +1,9 @@
 extern char look;
+extern const char *ops[];
+extern int ops_len;
 
+
+int in_cmp(char *, const char *[], int);
 void _getchar(void);
 void _error(char s[]);
 void _abort(char s[]);

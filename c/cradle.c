@@ -7,9 +7,28 @@
 #include "helpers.h"
 #include "instructions.h"
 
+/* re-do the definition to take a struct instead of separate structures. */
 
+
+typedef struct {
+  const char *arr[] = {"+", "-"};
+  int arr_len = 2;
+}
+
+const char *ops[] = {"+", "-"};
+int ops_len = 2;
 
 char look;
+
+int in_cmp(char *target, const char *array[], int array_len)
+{
+  int i;
+  for (i = 0; i < array_len; i++) {
+    if (strcmp(target, array[i]) == 0)
+      return 1;
+  }
+  return 0;
+}
 
 void _getchar(void)
 {

@@ -4,7 +4,9 @@
 
 int main()
 {
-  init();
-  expression();
+  /*  init();
+
+      expression(); */
+  printf("%d", in_cmp("-", ops, ops_len));
   return 0;
 }
