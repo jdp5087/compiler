@@ -137,51 +137,35 @@ void factor(void)
     char *c = (char*)malloc(sizeof(char)*3);
     char *d = getnum();
     sprintf(c, "%c%s", '$', d);
-    char *s = movl(c, "%eax");
-    emitln(s);
+    movl(c, "%eax");
     free(c);
     free(d);
-    free(s);
   }
 }
 
 void multiply(void)
 {
-
   match('*');
   factor();
   imul("(%esp)", "%eax");
-  char *t = addl("$4", "%esp");
-  emitln(t);
-  free(t);
+  addl("$4", "%esp");
 }
 
 void divide(void)
 {
   match('/');
   factor();
-  char *r = movl("%eax", "%edx");
-  char *s = xor("%eax", "%eax");
-  char *t = idivl("(%esp)");  
-  char *u = addl("$4", "%esp");
-  emitln(r);
-  emitln(s);
-  emitln(t);
-  emitln(u);
-  free(r);
-  free(s);
-  free(t);
-  free(u);
+  movl("%eax", "%edx");
+  xor("%eax", "%eax");
+  idivl("(%esp)");  
+  addl("$4", "%esp");
 }
 
 void term(void)
 {
-  char *s;
   factor();
   while (is_mulop(look)) {
-    char *s = push("%eax");
-    emitln(s);
-    free(s);
+    push("%eax");
     switch (look){
     case '*' :
       multiply();
@@ -199,43 +183,28 @@ void add(void)
 {
   match('+');
   term();
-  char *s = addl("(%esp)", "%eax");
-  char *r = addl("$4", "%esp");
-  emitln(s);
-  emitln(r);
-  free(s);
-  free(r);
+  addl("(%esp)", "%eax");
+  addl("$4", "%esp");
 }
 
 void subtract(void)
 {
   match('-');
   term();
-  char *r = subl("(%esp)", "%eax");
-  char *s = addl("$4", "%esp");
-  char *t = neg("%eax");
-  emitln(r);
-  emitln(s);
-  emitln(t);
-  free(r);
-  free(s);
-  free(t);
+  subl("(%esp)", "%eax");
+  addl("$4", "%esp");
+  neg("%eax");
 }
 
 void expression(void)
 {
-  char *s;
   if (is_addop(look)) {
-    char *t = xor("%eax", "%eax");
-    emitln(t);
-    free(t);
+    xor("%eax", "%eax");
   } else {
     term();
   }
   while (is_addop(look)) {
-    char *s = push("%eax");
-    emitln(s);
-    free(s);
+    push("%eax");
     switch (look){
     case '+' :
       add();
