@@ -73,12 +73,12 @@ char* imul(char *r1, char *r2)
   return r;
 }
 
-char* idiv(char *r1, char *r2)
+char* idivl(char *r1)
 {
-  char *b = two_arg_instruction("idiv");
-  size_t len = strlen(b) + strlen(r1) + strlen(r2) + 3*sizeof(char);
+  char *b = one_arg_instruction("idivl");
+  size_t len = strlen(b) + strlen(r1) + sizeof(char);
   char *r = (char*)malloc(len);
-  sprintf(r, b, r1, r2);
+  sprintf(r, b, r1);
   free(b);
   return r;
 }
@@ -102,3 +102,14 @@ char* push(char *r1)
   free(b);
   return r;
 }
+
+char* xor(char *r1, char *r2)
+{
+  char *b = two_arg_instruction("xor");
+  size_t len = strlen(b) + strlen(r1) + strlen(r2) + 3*sizeof(char);
+  char *r = (char*)malloc(len);
+  sprintf(r, b, r1, r2);
+  free(b);
+  return r;
+}
+

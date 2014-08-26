@@ -138,15 +138,18 @@ void divide(void)
 {
   match('/');
   factor();
-  char *r = movl("(%esp)", "%ebx");
-  char *s = addl("$4", "%esp");
-  char *t = idiv("%ebx", "%eax");
+  char *r = movl("%eax", "%edx");
+  char *s = xor("%eax", "%eax");
+  char *t = idivl("(%esp)");  
+  char *u = addl("$4", "%esp");
   emitln(r);
   emitln(s);
   emitln(t);
+  emitln(u);
   free(r);
   free(s);
   free(t);
+  free(u);
 }
 
 void term(void)
