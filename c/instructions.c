@@ -88,7 +88,7 @@ void idivl(char *r1)
   free(r);
 }
 
-void neg(char *r1)
+void negl(char *r1)
 {
   char *b = one_arg_instruction("neg");
   size_t len = strlen(b) + strlen(r1) + sizeof(char);
@@ -99,7 +99,7 @@ void neg(char *r1)
   free(r);
 }
 
-void push(char *r1)
+void pushl(char *r1)
 {
   char *b = one_arg_instruction("push");
   size_t len = strlen(b) + strlen(r1) + sizeof(char);
@@ -110,7 +110,7 @@ void push(char *r1)
   free(r);
 }
 
-void xor(char *r1, char *r2)
+void xorl(char *r1, char *r2)
 {
   char *b = two_arg_instruction("xor");
   size_t len = strlen(b) + strlen(r1) + strlen(r2) + 3*sizeof(char);

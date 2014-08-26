@@ -155,7 +155,7 @@ void divide(void)
 {
   match('/');
   factor();
-  xor("%edx", "%edx");
+  xorl("%edx", "%edx");
   movl("%eax","%ebx");
   movl("(%esp)","%eax");
   addl("$4", "%esp");
@@ -166,7 +166,7 @@ void term(void)
 {
   factor();
   while (is_mulop(look)) {
-    push("%eax");
+    pushl("%eax");
     switch (look){
     case '*' :
       multiply();
@@ -194,18 +194,18 @@ void subtract(void)
   term();
   subl("(%esp)", "%eax");
   addl("$4", "%esp");
-  neg("%eax");
+  negl("%eax");
 }
 
 void expression(void)
 {
   if (is_addop(look)) {
-    xor("%eax", "%eax");
+    xorl("%eax", "%eax");
   } else {
     term();
   }
   while (is_addop(look)) {
-    push("%eax");
+    pushl("%eax");
     switch (look){
     case '+' :
       add();
