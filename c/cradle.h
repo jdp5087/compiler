@@ -1,6 +1,8 @@
 extern char look;
-extern const char *ops[];
-extern int ops_len;
+extern const char *addops[];
+extern int addops_len;
+extern const char *mulops[];
+extern int mulops_len;
 
 int in_cmp(char *, const char *[], int);
 void _getchar(void);

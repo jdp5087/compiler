@@ -14,8 +14,11 @@
 /*   int arr_len = 2; */
 /* } stuff; */
 
-const char *ops[] = {"+", "-"};
-int ops_len = (sizeof(ops)/sizeof(char *));
+const char *addops[] = {"+", "-"};
+int addops_len = (sizeof(addops)/sizeof(char *));
+const char *mulops[] = {"*", "/"};
+int mulops_len = (sizeof(mulops)/sizeof(char *));
+
 char look;
 
 int in_cmp(char *target, const char *array[], int array_len)
@@ -108,7 +111,7 @@ void init(void)
   _getchar();
 }
 
-void term(void)
+void factor(void)
 {
   char *c = (char*)malloc(sizeof(char)*3);
   sprintf(c, "%c%s", '$', getnum());
@@ -118,33 +121,98 @@ void term(void)
   free(s);
 }
 
+void multiply(void)
+{
+
+  match('*');
+  factor();
+  char *s = imul("(%esp)", "%eax");
+  char *t = addl("$4", "%esp");
+  emitln(s);
+  emitln(t);
+  free(s);
+  free(t);
+}
+
+void divide(void)
+{
+  match('/');
+  factor();
+  char *r = movl("(%esp)", "%ebx");
+  char *s = addl("$4", "%esp");
+  char *t = idiv("%ebx", "%eax");
+  emitln(r);
+  emitln(s);
+  emitln(t);
+  free(r);
+  free(s);
+  free(t);
+}
+
+void term(void)
+{
+  char *string_look;
+  char *s;
+  factor();
+  string_look = char_to_string(look);
+  while (in_cmp(string_look, mulops, mulops_len)) {
+    char *s = push("%eax");
+    emitln(s);
+    free(s);
+    switch (look){
+    case '*' :
+      multiply();
+      break;
+    case '/' :
+      divide();
+      break;
+    default :
+      free(string_look);
+      _expected("Mulop");
+    }
+    free(string_look);
+    string_look = char_to_string(look);
+  }
+  free(string_look);
+}
+
 void add(void)
 {
   match('+');
   term();
-  char *s = addl("%eax", "%ebx");
+  char *s = addl("(%esp)", "%eax");
+  char *r = addl("$4", "%esp");
   emitln(s);
+  emitln(r);
   free(s);
+  free(r);
 }
 
 void subtract(void)
 {
   match('-');
   term();
-  char *s = subl("%eax", "%ebx");
+  char *r = subl("(%esp)", "%eax");
+  char *s = addl("$4", "%esp");
+  char *t = neg("%eax");
+  emitln(r);
   emitln(s);
+  emitln(t);
+  free(r);
   free(s);
+  free(t);
 }
 
 void expression(void)
 {
   char *string_look;
+  char *s;
   term();
-  char *s = movl("%eax", "%ebx");
-  emitln(s);
-  free(s);
   string_look = char_to_string(look);
-  while (in_cmp(string_look, ops, ops_len)) {
+  while (in_cmp(string_look, addops, addops_len)) {
+    char *s = push("%eax");
+    emitln(s);
+    free(s);
     switch (look){
     case '+' :
       add();
