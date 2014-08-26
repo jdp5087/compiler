@@ -63,14 +63,15 @@ char* subl(char *r1, char *r2)
   return r;
 }
 
-char* imul(char *r1, char *r2)
+void imul(char *r1, char *r2)
 {
   char *b = two_arg_instruction("imul");
   size_t len = strlen(b) + strlen(r1) + strlen(r2) + 3*sizeof(char);
   char *r = (char*)malloc(len);
   sprintf(r, b, r1, r2);
   free(b);
-  return r;
+  emitln(r);
+  free(r);
 }
 
 char* idivl(char *r1)

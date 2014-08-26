@@ -15,5 +15,6 @@ char* getnum(void);
 void emit(char *);
 void emitln(char *);
 void init(void);
+void expression(void);
 
 #define TAB '\t'

@@ -31,6 +31,22 @@ int in_cmp(char *target, const char *array[], int array_len)
   return 0;
 }
 
+int is_addop(char c)
+{
+  char *sc = char_to_string(c);
+  int res = in_cmp(sc, addops, addops_len);
+  free(sc);
+  return res;
+}
+
+int is_mulop(char c)
+{
+  char *sc = char_to_string(c);
+  int res = in_cmp(sc, mulops, mulops_len);
+  free(sc);
+  return res;
+}
+
 void _getchar(void)
 {
   look = getchar();
@@ -113,12 +129,20 @@ void init(void)
 
 void factor(void)
 {
-  char *c = (char*)malloc(sizeof(char)*3);
-  sprintf(c, "%c%s", '$', getnum());
-  char *s = movl(c, "%eax");
-  emitln(s);
-  free(c);
-  free(s);
+  if (look == '(') {
+    match('(');
+    expression();
+    match(')');
+  } else {
+    char *c = (char*)malloc(sizeof(char)*3);
+    char *d = getnum();
+    sprintf(c, "%c%s", '$', d);
+    char *s = movl(c, "%eax");
+    emitln(s);
+    free(c);
+    free(d);
+    free(s);
+  }
 }
 
 void multiply(void)
@@ -126,11 +150,9 @@ void multiply(void)
 
   match('*');
   factor();
-  char *s = imul("(%esp)", "%eax");
+  imul("(%esp)", "%eax");
   char *t = addl("$4", "%esp");
-  emitln(s);
   emitln(t);
-  free(s);
   free(t);
 }
 
@@ -154,11 +176,9 @@ void divide(void)
 
 void term(void)
 {
-  char *string_look;
   char *s;
   factor();
-  string_look = char_to_string(look);
-  while (in_cmp(string_look, mulops, mulops_len)) {
+  while (is_mulop(look)) {
     char *s = push("%eax");
     emitln(s);
     free(s);
@@ -170,13 +190,9 @@ void term(void)
       divide();
       break;
     default :
-      free(string_look);
       _expected("Mulop");
     }
-    free(string_look);
-    string_look = char_to_string(look);
   }
-  free(string_look);
 }
 
 void add(void)
@@ -208,11 +224,15 @@ void subtract(void)
 
 void expression(void)
 {
-  char *string_look;
   char *s;
-  term();
-  string_look = char_to_string(look);
-  while (in_cmp(string_look, addops, addops_len)) {
+  if (is_addop(look)) {
+    char *t = xor("%eax", "%eax");
+    emitln(t);
+    free(t);
+  } else {
+    term();
+  }
+  while (is_addop(look)) {
     char *s = push("%eax");
     emitln(s);
     free(s);
@@ -224,12 +244,9 @@ void expression(void)
       subtract();
       break;
     default :
-      free(string_look);
       _expected("Addop");
     }
-    free(string_look);
-    string_look = char_to_string(look);
   }
-  free(string_look);
 }
+
 

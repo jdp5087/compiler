@@ -94,3 +94,8 @@ def expression():
 
 This is very likely to change very soon, as this error checking assumes 1 digit followed by an op,
 always.
+
+###PAGE 23### (Using the 2012 PDF now)
+
+Everything is working, save for a bug where two digits in succession cause the compiler to terminate, while it does not raise an error. I'm not bothering to explicitly call an error, because I'm sure that before long we will be accepting terms() of more than one digit in the near future.
+
