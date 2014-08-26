@@ -147,7 +147,7 @@ void multiply(void)
 {
   match('*');
   factor();
-  imul("(%esp)", "%eax");
+  imull("(%esp)", "%eax");
   addl("$4", "%esp");
 }
 
@@ -155,10 +155,11 @@ void divide(void)
 {
   match('/');
   factor();
-  movl("%eax", "%edx");
-  xor("%eax", "%eax");
-  idivl("(%esp)");  
+  xor("%edx", "%edx");
+  movl("%eax","%ebx");
+  movl("(%esp)","%eax");
   addl("$4", "%esp");
+  idivl("%ebx");
 }
 
 void term(void)
