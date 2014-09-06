@@ -1,7 +1,7 @@
 cradle.o: cradle.c cradle.h helpers.h
 	gcc -c cradle.c
 
-Main.o: Main.c cradle.h
+Main.o: Main.c Main.h cradle.h
 	gcc -c Main.c
 
 helpers.o: helpers.c helpers.h
@@ -10,5 +10,8 @@ helpers.o: helpers.c helpers.h
 instructions.o: instructions.c instructions.h
 	gcc -c instructions.c
 
-df: cradle.o Main.o helpers.o instructions.o
-	gcc cradle.o Main.o helpers.o instructions.o -o ../df
+asm_head.o: asm_head.c asm_head.h
+	gcc -c asm_head.c
+
+df: cradle.o Main.o helpers.o instructions.o asm_head.o
+	gcc cradle.o Main.o helpers.o instructions.o asm_head.o -o ../df
