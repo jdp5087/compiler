@@ -18,3 +18,4 @@ void init(void);
 void expression(void);
 
 #define TAB '\t'
+#define NEWLINE '\n'

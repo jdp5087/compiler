@@ -7,12 +7,6 @@
 #include "helpers.h"
 #include "instructions.h"
 
-/* re-do the definition to take a struct instead of separate structures. */
-
-/* typedef struct { */
-/*   const char *arr[] = {"+", "-"}; */
-/*   int arr_len = 2; */
-/* } stuff; */
 
 const char *addops[] = {"+", "-"};
 int addops_len = (sizeof(addops)/sizeof(char *));
@@ -89,14 +83,18 @@ void match(char x)
   }
 }
 
+
+// Because function calls don't use immediate addressing,
+// I'm going to leave the responsibility of formatting the $
+// to the caller in getname, but not in getnum
 char* getname(void)
 {
   if (!isalpha(look)) {
     _expected("Name");
   } else {
-    char *c = char_to_string(toupper(look));
+    char *d = char_to_string(toupper(look));
     _getchar();
-    return c;
+    return d;
   }
 }
 
@@ -105,9 +103,10 @@ char* getnum(void)
   if (!isdigit(look)) {
     _expected("Digit");
   } else {
-    char *c = char_to_string(look);
+    char *d = (char*)malloc(sizeof(char)*3);
+    sprintf(d, "$%c", look);
     _getchar();
-    return c;
+    return d;
   }
 }
 
@@ -127,19 +126,36 @@ void init(void)
   _getchar();
 }
 
+void ident(void)
+{
+  char *name = getname();
+  if (look == '(') {
+    match('(');
+    match(')');
+    call(name);
+  } else {
+    char *c = (char*)malloc(sizeof(char)*3);
+    sprintf(c, "$%s", name);
+    movl(c, "%eax");
+    free(c);
+  }
+  free(name);
+}
+
 void factor(void)
 {
   if (look == '(') {
     match('(');
     expression();
     match(')');
+  } else if (isalpha(look)) {
+    char *name = getname();
+    movl(name, "%eax");
+    free(name);
   } else {
-    char *c = (char*)malloc(sizeof(char)*3);
-    char *d = getnum();
-    sprintf(c, "%c%s", '$', d);
-    movl(c, "%eax");
-    free(c);
-    free(d);
+    char *num = getnum();
+    movl(num, "%eax");
+    free(num);
   }
 }
 
@@ -174,8 +190,6 @@ void term(void)
     case '/' :
       divide();
       break;
-    default :
-      _expected("Mulop");
     }
   }
 }
@@ -213,10 +227,18 @@ void expression(void)
     case '-' :
       subtract();
       break;
-    default :
-      _expected("Addop");
     }
   }
+}
+
+void assignment(void)
+{
+  char *name = getname();
+  match('=');
+  expression();
+  lcomm(name, "1");
+  movl("%eax", name);
+  free(name);
 }
 
 

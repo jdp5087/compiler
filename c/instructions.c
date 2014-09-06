@@ -121,3 +121,25 @@ void xorl(char *r1, char *r2)
   free(r);
 }
 
+void call(char *symbol)
+{
+  char *b = one_arg_instruction("call");
+  size_t len = strlen(b) + strlen(symbol) + sizeof(char);
+  char *r = (char*)malloc(len);
+  sprintf(r, b, symbol);
+  free(b);
+  emitln(r);
+  free(r);
+}
+
+void lcomm(char *symbol, char *bytes)
+{
+  char *b = two_arg_instruction(".lcomm");
+  size_t len = strlen(b) + strlen(symbol) + strlen(bytes) + 3*sizeof(char);
+  char *r = (char*)malloc(len);
+  sprintf(r, b, symbol, bytes);
+  free(b);
+  emitln(r);
+  free(r);
+}
+
