@@ -89,26 +89,31 @@ void match(char x)
 // to the caller in getname, but not in getnum
 char* getname(void)
 {
-  if (!isalpha(look)) {
+  char *token = (char*)(malloc(sizeof(char)*TOKENSIZE));
+  sprintf(token, "");
+  if (!isalpha(look))
     _expected("Name");
-  } else {
-    char *d = char_to_string(toupper(look));
+  while (isalnum(look)) {
+    sprintf(token, "%s%c", token, toupper(look));
     _getchar();
-    return d;
   }
+  return token;
 }
 
 char* getnum(void)
 {
+  char *value = (char*)(malloc(sizeof(char)*TOKENSIZE));
+  sprintf(value, "");
   if (!isdigit(look)) {
     _expected("Digit");
-  } else {
-    char *d = (char*)malloc(sizeof(char)*3);
-    sprintf(d, "$%c", look);
-    _getchar();
-    return d;
   }
+  while (isdigit(look)) {
+    sprintf(value, "%s%c", value, look);
+    _getchar();
+  }
+  return value;
 }
+  
 
 void emit(char *s)
 {
@@ -149,9 +154,7 @@ void factor(void)
     expression();
     match(')');
   } else if (isalpha(look)) {
-    char *name = getname();
-    movl(name, "%eax");
-    free(name);
+    ident();
   } else {
     char *num = getnum();
     movl(num, "%eax");
@@ -236,7 +239,7 @@ void assignment(void)
   char *name = getname();
   match('=');
   expression();
-  lcomm(name, "1");
+  lcomm(name, "4");
   movl("%eax", name);
   free(name);
 }

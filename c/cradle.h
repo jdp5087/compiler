@@ -19,3 +19,5 @@ void expression(void);
 
 #define TAB '\t'
 #define NEWLINE '\n'
+
+#define TOKENSIZE 64
