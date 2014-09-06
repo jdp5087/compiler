@@ -46,9 +46,16 @@ void _getchar(void)
   look = getchar();
 }
 
+void skipwhite(void)
+{
+  while isspace(look) {
+      _getchar();
+    }
+}
+
 void _error(char s[])
 {
-  printf("\n\aError: %s\n", s);
+  printf("\nError: %s\n", s);
 }
 
 void _abort(char s[])
@@ -67,17 +74,12 @@ void _expected(char s[])
 
 void match(char x)
 {
-  char *c = malloc(sizeof(char*)*4);
-  char *d = "\"";
-  char e[2];
-
+  char *c = malloc(sizeof(char)*5);
   if (look == x) {
     _getchar();
+    skipwhite();
   } else {
-    sprintf(e, "%c", x);
-    strcpy(c, d);
-    strcat(c, e);
-    strcat(c, d);
+    sprintf(c, "\"%c\"", x);
     _expected(c);
     free(c);
   }
@@ -97,6 +99,7 @@ char* getname(void)
     sprintf(token, "%s%c", token, toupper(look));
     _getchar();
   }
+  skipwhite();
   return token;
 }
 
@@ -111,9 +114,10 @@ char* getnum(void)
     sprintf(value, "%s%c", value, look);
     _getchar();
   }
+  skipwhite();
   return value;
 }
-  
+
 
 void emit(char *s)
 {
@@ -129,6 +133,7 @@ void emitln(char *s)
 void init(void)
 {
   _getchar();
+  skipwhite();
 }
 
 void ident(void)
