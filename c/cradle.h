@@ -11,11 +11,11 @@ void _abort(char []);
 void _expected(char []);
 void match(char);
 char* getname(void);
-char* getnum(void);
+int getnum(void);
 void emit(char *);
 void emitln(char *);
 void init(void);
-void expression(void);
+int expression(void);
 
 #define TAB '\t'
 #define NEWLINE '\n'

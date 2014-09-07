@@ -98,16 +98,17 @@ char* getname(void)
   }
 }
 
-char* getnum(void)
+int getnum(void)
 {
+  int value = 0;
   if (!isdigit(look)) {
     _expected("Digit");
-  } else {
-    char *d = (char*)malloc(sizeof(char)*3);
-    sprintf(d, "$%c", look);
-    _getchar();
-    return d;
   }
+  while (isdigit(look)) {
+    value = (10*value) + (look - '0');
+    _getchar();
+  }
+    return value; 
 }
 
 void emit(char *s)
@@ -142,20 +143,16 @@ void ident(void)
   free(name);
 }
 
-void factor(void)
+int factor(void)
 {
+  int result;
   if (look == '(') {
     match('(');
-    expression();
+    result = expression();
     match(')');
-  } else if (isalpha(look)) {
-    char *name = getname();
-    movl(name, "%eax");
-    free(name);
+    return result;
   } else {
-    char *num = getnum();
-    movl(num, "%eax");
-    free(num);
+    return getnum();
   }
 }
 
@@ -178,20 +175,22 @@ void divide(void)
   idivl("%ebx");
 }
 
-void term(void)
+int term(void)
 {
-  factor();
+  int value = factor();
   while (is_mulop(look)) {
-    pushl("%eax");
     switch (look){
     case '*' :
-      multiply();
+      match('*');
+      value *= factor();
       break;
     case '/' :
-      divide();
+      match('/');
+      value /= factor();
       break;
     }
   }
+  return value;
 }
 
 void add(void)
@@ -211,24 +210,27 @@ void subtract(void)
   negl("%eax");
 }
 
-void expression(void)
+int expression(void)
 {
+  int value;
   if (is_addop(look)) {
-    xorl("%eax", "%eax");
+    value = 0;
   } else {
-    term();
+    value = term();
   }
   while (is_addop(look)) {
-    pushl("%eax");
-    switch (look){
+    switch (look) {
     case '+' :
-      add();
+      match('+');
+      value += term();
       break;
     case '-' :
-      subtract();
+      match('-');
+      value -= term();
       break;
     }
   }
+  return value;
 }
 
 void assignment(void)

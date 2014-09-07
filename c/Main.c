@@ -11,9 +11,7 @@ int main()
   #endif
 
   init();
-  assignment();
-  if (look != NEWLINE)
-    _expected("Newline");
+  printf("%d\n", expression());
 
   #ifdef FOOTERS
   print_footers();

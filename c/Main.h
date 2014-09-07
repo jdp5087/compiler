@@ -1,2 +1,0 @@
-#define HEADERS
-#define FOOTERS
